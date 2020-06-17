@@ -7,7 +7,8 @@ from ...items.zillow.buy import ZillowBuyItem
 class ZillowBuySpider(scrapy.Spider):
     name = 'ZillowBuySpider'
     allowed_domains = ['zillow.com']
-    start_urls = ['https://www.zillow.com/homes/']
+    page_num = 1
+    start_urls = ['https://www.zillow.com/homes/{}_p/'.format(str(page_num))]
     db_name = 'zillow'
     collection_name = 'buy'
 
@@ -38,6 +39,11 @@ class ZillowBuySpider(scrapy.Spider):
                     headers={"Content-Type": "application/json"},
                     body=r'{"operationName":"ForSaleDoubleScrollFullRenderQuery","variables":{"zpid":31533266,"contactFormRenderParameter":{"zpid":31533266,"platform":"desktop","isDoubleScroll":true}},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff","queryId":"f04703b7a1f4f2f9722b3a568e469622"}'
                 )
+
+        self.page_num += 1
+        yield scrapy.Request(url='https://www.zillow.com/homes/{}_p/'.format(str(page_num)),
+            callback=self.parse    
+        )
        
 
     

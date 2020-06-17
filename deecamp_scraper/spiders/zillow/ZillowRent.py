@@ -7,7 +7,8 @@ from ...items.zillow.rent import ZillowRentItem
 class ZillowRentSpider(scrapy.Spider):
     name = 'ZillowRentSpider'
     allowed_domains = ['zillow.com']
-    start_urls = ['https://www.zillow.com/homes/for_rent/']
+    page_num = 1
+    start_urls = ['https://www.zillow.com/homes/for_rent/{}_p/'.format(str(page_num))]
     db_name = 'zillow'
     collection_name = 'rent'
 
@@ -16,7 +17,7 @@ class ZillowRentSpider(scrapy.Spider):
 
         counter = 0
         for house in houses:
-            while counter <=1 :
+            while counter <=3 :
                 counter += 1
                 item = ZillowRentItem()
 
@@ -26,9 +27,9 @@ class ZillowRentSpider(scrapy.Spider):
                 house_link = house_link.split('/')[-2].strip('_zpid')
                 
                 info_url = 'https://www.zillow.com/graphql/?zpid=' + house_link + \
-                    '&contactFormRenderParameter=&queryId=f04703b7a1f4f2f9722b3a568e469622&operationName=ForSaleDoubleScrollFullRenderQuery'
+                    '&contactFormRenderParameter=&queryId=394ed3300bcc9b921171ac74aa6d56c9&operationName=ForRentDoubleScrollFullRenderQuery'
                 price_url = 'https://www.zillow.com/graphql/?zpid=' + house_link + \
-                    '&timePeriod=TEN_YEARS&metricType=LOCAL_HOME_VALUES&forecast=true&operationName=HomeValueChartDataQuery'
+                    '&timePeriod=FIVE_YEARS&metricType=LOCAL_RENTAL_RATES&forecast=true&operationName=HomeValueChartDataQuery'
 
 
                 yield scrapy.Request(url=info_url,
@@ -36,8 +37,13 @@ class ZillowRentSpider(scrapy.Spider):
                     callback=self.getHouse,
                     method="POST",
                     headers={"Content-Type": "application/json"},
-                    body=r'{"operationName":"ForSaleDoubleScrollFullRenderQuery","variables":{"zpid":31533266,"contactFormRenderParameter":{"zpid":31533266,"platform":"desktop","isDoubleScroll":true}},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff","queryId":"f04703b7a1f4f2f9722b3a568e469622"}'
+                    body=r'{"operationName":"ForRentDoubleScrollFullRenderQuery","variables":{"zpid":2079087470,"contactFormRenderParameter":{"zpid":2079087470,"platform":"desktop","isDoubleScroll":true}},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff","queryId":"394ed3300bcc9b921171ac74aa6d56c9"}'
                 )
+        
+        self.page_num += 1
+        yield scrapy.Request(url='https://www.zillow.com/homes/for_rent/{}_p/'.format(str(page_num)),
+            callback=self.parse    
+        )
        
 
     
@@ -53,8 +59,8 @@ class ZillowRentSpider(scrapy.Spider):
             callback=self.getPrice,
             method="POST",
             headers={"Content-Type": "application/json"},
-            body=r'{"query":"query HomeValueChartDataQuery($zpid: ID!, $metricType: HomeValueChartMetricType, $timePeriod: HomeValueChartTimePeriod) {\n  property(zpid: $zpid) {\n    homeValueChartData(metricType: $metricType, timePeriod: $timePeriod) {\n      points {\n        x\n        y\n      }\n      name\n    }\n  }\n}\n","operationName":"HomeValueChartDataQuery","variables":{"zpid":30638302,"timePeriod":"TEN_YEARS","metricType":"LOCAL_HOME_VALUES","forecast":true},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff"}'
-        ) 
+            body=r'{"query":"query HomeValueChartDataQuery($zpid: ID!, $metricType: HomeValueChartMetricType, $timePeriod: HomeValueChartTimePeriod) {\n  property(zpid: $zpid) {\n    homeValueChartData(metricType: $metricType, timePeriod: $timePeriod) {\n      points {\n        x\n        y\n      }\n      name\n    }\n  }\n}\n","operationName":"HomeValueChartDataQuery","variables":{"zpid":2079087470,"timePeriod":"FIVE_YEARS","metricType":"LOCAL_RENTAL_RATES","forecast":true},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff"}'
+        )
 
     def getPrice(self, response):
         item = response.meta["item"]
