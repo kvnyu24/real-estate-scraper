@@ -93,3 +93,7 @@ MONGO_URI = 'mongodb://localhost:27017'
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+# Outputs Chinese
+FEED_EXPORT_ENCODING = 'utf-8'
