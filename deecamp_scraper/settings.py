@@ -49,15 +49,18 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'deecamp_scraper.middlewares.DeecampScraperSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+   'deecamp_scraper.middlewares.DeecampScraperSpiderMiddleware': 543,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+DOWNLOADER_MIDDLEWARES = {
+    'deecamp_scraper.middlewares.RandomHttpProxyMiddleware': 543
+    # 'rotating_proxies.middlewares.RotatingProxyMiddleware': 350,
 #    'deecamp_scraper.middlewares.DeecampScraperDownloaderMiddleware': 543,
-#}
+}
+HTTPPROXY_PROXY_LIST_FILE  = 'configs/proxy_list_1.txt'
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -97,3 +100,8 @@ MONGO_URI = 'mongodb://localhost:27017'
 
 # Outputs Chinese
 FEED_EXPORT_ENCODING = 'utf-8'
+
+# Rotating Proxies
+# ROTATING_PROXY_LIST_PATH = 'configs/proxy_list_1.txt'
+# from configs.get_proxy import proxies
+# ROTATING_PROXY_LIST = proxies

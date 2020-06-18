@@ -8,6 +8,7 @@
 from scrapy import signals
 
 
+
 class DeecampScraperSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
@@ -101,3 +102,36 @@ class DeecampScraperDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
+from collections import defaultdict
+import random
+
+class RandomHttpProxyMiddleware(HttpProxyMiddleware):
+
+    def __init__(self, auth_encoding='utf-8', proxy_list_file=None):
+        if not proxy_list_file:
+            raise NotConfigured
+
+        self.auth_encoding=auth_encoding
+        self.proxies=defaultdict(list)
+
+        with open(proxy_list_file) as f:
+            proxy_list = f.readlines()
+            scheme = "http"
+            for proxy in proxy_list:
+                url = proxy
+                self.proxies[scheme].append(self._get_proxy(url,scheme))
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        auth_encoding=crawler.settings.get('HTTPPROXY_AUTH_ENCODING','utf-8')
+        proxy_list_file=crawler.settings.get('HTTPPROXY_PROXY_LIST_FILE')
+        return cls(auth_encoding, proxy_list_file)
+
+    def _set_proxy(self, request, scheme):
+        creds,proxy = random.choice(self.proxies[scheme])
+        request.meta['proxy']=proxy
+        if creds:
+            request.headers['Proxy-Authorization']=b'Basic'+creds
+
