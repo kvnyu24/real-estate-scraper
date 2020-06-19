@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import json
-from datetime import date, timedelta
+import datetime
+from datetime import timedelta
 from ...items.baiduqianxi.baiduqxio import BaiduQxInOutItem
 from scrapy.utils.project import get_project_settings
 
@@ -9,7 +10,7 @@ from scrapy.utils.project import get_project_settings
 
 class BaiduQxIoSpider(scrapy.Spider):
     name = 'BaiduQxIoSpider'
-    allowed_domains = ['http://huiyan.baidu.com']
+    allowed_domains = ['huiyan.baidu.com']
     db_name = 'baiduqx'
     collection_name = 'inout'
     
@@ -21,20 +22,17 @@ class BaiduQxIoSpider(scrapy.Spider):
             city_codes = json.load(f).values()
 
         dates = []
-        start_date =  date(2019,6,15)
-        end_date = date(2019,6,18)
+        start_date =  datetime.date(2020,1,15)
+        end_date = datetime.date(2020,1,20)
         for n in range(int((end_date - start_date).days+1)):
             dates.append((start_date + timedelta(n)).strftime('%Y%m%d'))
         
         urls = []
-        print(city_codes, dates)
         for city_code in city_codes:
             for date in dates:
                 urls.append(('https://huiyan.baidu.com/migration/cityrank.jsonp?dt=city&id={}&type=move_in&date={}'.format(city_code, date), date, city_code))
 
-        print(urls)
         for url in urls:
-            print(url)
             yield scrapy.Request(
                 url=url[0], 
                 meta={"date": url[1], "city_code":url[2]},
@@ -52,12 +50,13 @@ class BaiduQxIoSpider(scrapy.Spider):
         item = BaiduQxInOutItem()
         item["city_in"] = city_in
 
-        city_out_url = 'http://huiyan.baidu.com/migration/cityrank.jsonp?dt=city&id={}&type=move_out&date={}'.format(city_code, date)
+        city_out_url = 'https://huiyan.baidu.com/migration/cityrank.jsonp?dt=city&id={}&type=move_out&date={}'.format(city_code, date)
 
-
-        yield scrapy.Request(url=city_out_url,
+        yield scrapy.Request(
+            url=city_out_url,
             meta={"item": item},
             callback=self.getOut,
+            errback=self.errback_web,
             method="GET",
             headers={"Content-Type": "application/json"},
         )
@@ -65,8 +64,14 @@ class BaiduQxIoSpider(scrapy.Spider):
     def getOut(self, response):
         item = response.meta["item"]
         city_out = json.loads(response.body.decode("utf-8").strip(r'cb(').strip(r')'))["data"]
-
+        
         item["city_out"] = city_out
 
         yield item
 
+    def errback_web(self, failure):
+        # log all failures
+        self.logger.error(repr(failure))
+        item ={}
+        item['Web Address']= failure.request.url
+        yield item

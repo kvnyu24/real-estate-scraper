@@ -1,5 +1,6 @@
 import scrapy 
 
-class BaiduQXMigrationIndexItem(scrapy.Item):
-    migration_index = scrapy.Field()
+class BaiduQxMigrationIndexItem(scrapy.Item):
+    immigration_index = scrapy.Field()
+    emmigration_index = scrapy.Field()
 

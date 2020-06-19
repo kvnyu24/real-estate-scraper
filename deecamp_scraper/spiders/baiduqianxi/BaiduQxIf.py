@@ -1,30 +1,59 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import json
+import datetime
+from datetime import timedelta
+from scrapy.utils.project import get_project_settings
 from ...items.baiduqianxi.baiduqxif import BaiduQXInternalFlowItem
 
 
 
-class BaiduQxIoSpider(scrapy.Spider):
-    name = 'BaiduQxIoSpider'
-    allowed_domains = ['http://huiyan.baidu.com']
-    start_urls = ['https://huiyan.baidu.com/migration/cityrank.jsonp?dt=city&id=420100&type=move_in&date=20200110']
+class BaiduQxIfSpider(scrapy.Spider):
+    name = 'BaiduQxIfSpider'
+    allowed_domains = ['huiyan.baidu.com']
     db_name = 'baiduqx'
-    collection_name = 'wuhan'
-    code = str(420100)
+    collection_name = 'internalflow'
     
+    def start_requests(self):
+  
+        settings = get_project_settings()
+        city_codes_path = settings.get('BAIDU_CITY_CODE_DICT_FILE')
+        with open(city_codes_path) as f:
+            city_codes = json.load(f).values()
+
+        dates = []
+        start_date =  datetime.date(2020,1,15)
+        end_date = datetime.date(2020,1,20)
+        for n in range(int((end_date - start_date).days+1)):
+            dates.append((start_date + timedelta(n)).strftime('%Y%m%d'))
+        
+        urls = []
+        for city_code in city_codes:
+            for date in dates:
+                urls.append('https://huiyan.baidu.com/migration/internalflowhistory.jsonp?dt=city&id={}&date={}'.format(city_code, date))
+
+        for url in urls:
+            yield scrapy.Request(
+                url=url, 
+                callback=self.parse,
+                method="GET",
+                errback=self.errback_web,
+                headers={"Content-Type": "application/json"},
+            )
+
 
 
     def parse(self, response):
-        city_in = json.loads(response.body.decode("utf-8").strip(r'cb(').strip(r')'))["data"]
+        internal_flow = json.loads(response.body.decode("utf-8").strip(r'cb(').strip(r')'))["data"]
 
         item = BaiduQXInternalFlowItem()
-        item["internal_flow"] = city_in
+        item["internal_flow"] = internal_flow
 
-        city_out_url = 'http://huiyan.baidu.com/migration/cityrank.jsonp?dt=city&id={code}&type=move_out&date={date}'
-        migration_index_url = 'http://huiyan.baidu.com/migration/historycurve.jsonp?dt=city&id={code}&type=move_{direction}&date={date}'
-        internal_flow_url = 'http://huiyan.baidu.com/migration/internalflowhistory.jsonp?dt=city&id={code}&date={date}'
+        yield item
 
-
-
-        yield city_in
+    def errback_web(self, failure):
+        # log all failures
+        self.logger.error(repr(failure))
+        item ={}
+        item['Web Address']= failure.request.url
+        yield item
