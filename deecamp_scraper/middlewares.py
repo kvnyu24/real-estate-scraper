@@ -6,6 +6,13 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+import random
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.utils.response import response_status_message
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
+from collections import defaultdict
+
+
 
 
 
@@ -103,16 +110,9 @@ class DeecampScraperDownloaderMiddleware:
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
-from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
-from collections import defaultdict
-import random
 
-class RandomHttpProxyMiddleware(HttpProxyMiddleware):
-
-    def __init__(self, auth_encoding='utf-8', proxy_list_file=None):
-        if not proxy_list_file:
-            raise NotConfigured
-
+class RandomProxyUserAgentMiddleware(HttpProxyMiddleware):
+    def __init__(self, auth_encoding='utf-8', proxy_list_file=None, ua_list_file=None):
         self.auth_encoding=auth_encoding
         self.proxies=defaultdict(list)
 
@@ -122,16 +122,28 @@ class RandomHttpProxyMiddleware(HttpProxyMiddleware):
             for proxy in proxy_list:
                 url = proxy
                 self.proxies[scheme].append(self._get_proxy(url,scheme))
+        
+        with open(ua_list_file) as f:
+            self.ua_list = [line.strip('\n') for line in f.readlines()]
+
 
     @classmethod
     def from_crawler(cls, crawler):
-        auth_encoding=crawler.settings.get('HTTPPROXY_AUTH_ENCODING','utf-8')
-        proxy_list_file=crawler.settings.get('HTTPPROXY_PROXY_LIST_FILE')
-        return cls(auth_encoding, proxy_list_file)
+        auth_encoding = crawler.settings.get('HTTPPROXY_AUTH_ENCODING','utf-8')
+        proxy_list_file = crawler.settings.get('PROXY_LIST_FILE')
+        ua_list_file = crawler.settings.get("USER_AGENT_LIST_FILE")
+
+        return cls(auth_encoding, proxy_list_file, ua_list_file)
 
     def _set_proxy(self, request, scheme):
+        ua = random.choice(self.ua_list)
+        request.headers.setdefault('User-Agent', ua)
+
         creds,proxy = random.choice(self.proxies[scheme])
         request.meta['proxy']=proxy
         if creds:
             request.headers['Proxy-Authorization']=b'Basic'+creds
+
+
+
 

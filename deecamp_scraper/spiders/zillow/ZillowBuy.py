@@ -38,6 +38,8 @@ class ZillowBuySpider(scrapy.Spider):
             )
 
         self.page_num += 1
+        for _ in range(1000):
+            print('https://www.zillow.com/homes/{}_p/'.format(str(page_num)))
         yield scrapy.Request(url='https://www.zillow.com/homes/{}_p/'.format(str(page_num)),
             callback=self.parse    
         )

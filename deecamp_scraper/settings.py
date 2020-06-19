@@ -14,7 +14,9 @@ BOT_NAME = 'deecamp_scraper'
 SPIDER_MODULES = ['deecamp_scraper.spiders', 
     'deecamp_scraper.spiders.zillow',
     'deecamp_scraper.spiders.fang',
-    'deecamp_scraper.spiders.qqheat']
+    'deecamp_scraper.spiders.qqheat',
+    'deecamp_scraper.spiders.baiduqianxi',
+    ]
 NEWSPIDER_MODULE = 'deecamp_scraper.spiders'
 
 
@@ -56,11 +58,12 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'deecamp_scraper.middlewares.RandomHttpProxyMiddleware': 543
+    'deecamp_scraper.middlewares.RandomProxyUserAgentMiddleware': 543,
     # 'rotating_proxies.middlewares.RotatingProxyMiddleware': 350,
 #    'deecamp_scraper.middlewares.DeecampScraperDownloaderMiddleware': 543,
 }
-HTTPPROXY_PROXY_LIST_FILE  = 'configs/proxy_list_1.txt'
+PROXY_LIST_FILE  = 'configs/proxies/proxy_list_2.txt'
+USER_AGENT_LIST_FILE = 'configs/user-agents/user_agent_list.txt'
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
