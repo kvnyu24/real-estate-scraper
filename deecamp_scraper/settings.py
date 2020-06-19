@@ -108,3 +108,9 @@ FEED_EXPORT_ENCODING = 'utf-8'
 # ROTATING_PROXY_LIST_PATH = 'configs/proxy_list_1.txt'
 # from configs.get_proxy import proxies
 # ROTATING_PROXY_LIST = proxies
+
+
+# baiduqianxi codes
+
+BAIDU_CITY_CODE_DICT_FILE = 'configs/baiduqianxi/cities_code.json'
+BAIDU_PROVINCE_CODE_DICT_FILE = 'configs/baiduqianxi/provinces_code.json'
