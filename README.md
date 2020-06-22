@@ -17,3 +17,4 @@
         - zillow (buy/rent)
         - fangtianxia (ershoufang, zuxiezilou, shouxiezilou)
         - baiduqianxi (city/province-wise in/out, immigration/emmigration, internal flow)
+        - qqheat (xingyun map)
