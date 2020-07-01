@@ -55,13 +55,12 @@ class BaiduQxMiSpider(scrapy.Spider):
         yield scrapy.Request(
             url=emmigration_url,
             meta={"item": item},
-            callback=self.getOut,
-            errback=self.errback_web,
+            callback=self.get_out,
             method="GET",
             headers={"Content-Type": "application/json"},
         )
 
-    def getOut(self, response):
+    def get_out(self, response):
         item = response.meta["item"]
         emmigration_index = json.loads(response.body.decode("utf-8").strip(r'cb(').strip(r')'))["data"]
         
@@ -69,9 +68,3 @@ class BaiduQxMiSpider(scrapy.Spider):
 
         yield item
 
-    def errback_web(self, failure):
-        # log all failures
-        self.logger.error(repr(failure))
-        item ={}
-        item['Web Address']= failure.request.url
-        yield item

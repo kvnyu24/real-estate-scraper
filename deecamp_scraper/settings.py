@@ -16,6 +16,7 @@ SPIDER_MODULES = ['deecamp_scraper.spiders',
     'deecamp_scraper.spiders.fang',
     'deecamp_scraper.spiders.qqheat',
     'deecamp_scraper.spiders.baiduqianxi',
+    'deecamp_scraper.spiders.ke'
     ]
 NEWSPIDER_MODULE = 'deecamp_scraper.spiders'
 

@@ -31,7 +31,7 @@ class ZillowRentSpider(scrapy.Spider):
 
             yield scrapy.Request(url=info_url,
                 meta={"item": item, "price_url": price_url},
-                callback=self.getHouse,
+                callback=self.get_house,
                 method="POST",
                 headers={"Content-Type": "application/json"},
                 body=r'{"operationName":"ForRentDoubleScrollFullRenderQuery","variables":{"zpid":2079087470,"contactFormRenderParameter":{"zpid":2079087470,"platform":"desktop","isDoubleScroll":true}},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff","queryId":"394ed3300bcc9b921171ac74aa6d56c9"}'
@@ -44,7 +44,7 @@ class ZillowRentSpider(scrapy.Spider):
        
 
     
-    def getHouse(self, response):
+    def get_house(self, response):
         item = response.meta["item"]
         info_json = json.loads(response.body)["data"]
         item["info"] = info_json
@@ -53,13 +53,13 @@ class ZillowRentSpider(scrapy.Spider):
         
         yield scrapy.Request(url=price_url,
             meta={"item": item},
-            callback=self.getPrice,
+            callback=self.get_price,
             method="POST",
             headers={"Content-Type": "application/json"},
             body=r'{"query":"query HomeValueChartDataQuery($zpid: ID!, $metricType: HomeValueChartMetricType, $timePeriod: HomeValueChartTimePeriod) {\n  property(zpid: $zpid) {\n    homeValueChartData(metricType: $metricType, timePeriod: $timePeriod) {\n      points {\n        x\n        y\n      }\n      name\n    }\n  }\n}\n","operationName":"HomeValueChartDataQuery","variables":{"zpid":2079087470,"timePeriod":"FIVE_YEARS","metricType":"LOCAL_RENTAL_RATES","forecast":true},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff"}'
         )
 
-    def getPrice(self, response):
+    def get_price(self, response):
         item = response.meta["item"]
         price_json = json.loads(response.body)["data"]
         item["price_change"] = price_json
