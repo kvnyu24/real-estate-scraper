@@ -7,10 +7,18 @@ from ...items.zillow.rent import ZillowRentItem
 class ZillowRentSpider(scrapy.Spider):
     name = 'ZillowRentSpider'
     allowed_domains = ['zillow.com']
-    page_num = 1
-    start_urls = ['https://www.zillow.com/homes/for_rent/{}_p/'.format(str(page_num))]
     db_name = 'zillow'
     collection_name = 'rent'
+
+    def start_requests(self):
+        base_url = 'https://www.zillow.com/homes/for_rent/'
+
+        for i in range(1, 101):
+            yield scrapy.Request(
+                url=base_url+str(i)+'_p/',
+                callback=self.parse    
+            )
+
 
     def parse(self, response):
         houses = Selector(response).xpath('/html/body/div[1]/div[5]/div/div[1]/div/div[1]/ul/li/article')
@@ -37,13 +45,6 @@ class ZillowRentSpider(scrapy.Spider):
                 body=r'{"operationName":"ForRentDoubleScrollFullRenderQuery","variables":{"zpid":2079087470,"contactFormRenderParameter":{"zpid":2079087470,"platform":"desktop","isDoubleScroll":true}},"clientVersion":"home-details/6.0.11.1378.master.b7c3cff","queryId":"394ed3300bcc9b921171ac74aa6d56c9"}'
             )
         
-        self.page_num += 1
-        yield scrapy.Request(url='https://www.zillow.com/homes/for_rent/{}_p/'.format(str(page_num)),
-            callback=self.parse    
-        )
-       
-
-    
     def get_house(self, response):
         item = response.meta["item"]
         info_json = json.loads(response.body)["data"]
