@@ -32,6 +32,18 @@ class QQHeatXingYun2Spider(scrapy.Spider):
         item = QQHeatXyItem()
         item["rank"] = response.meta["rank"]
         item["time"] = res["time"]
-        item["locs"] = res["locs"]
+
+        locations = res["locs"]
+        locs_split = locations.split(",")
+
+        all_locs = []
+        for i in range(int(len(locs_split)/3)):
+            lat = locs_split[0+3*i]      
+            lon = locs_split[1+3*i]      
+            count = locs_split[2+3*i]
+            
+            all_locs.append([int(lat)/100, int(lon)/100, count])
+
+        item["locs"] = dict(all_locs)
         
         yield item 
