@@ -3,6 +3,7 @@ import scrapy
 from scrapy.selector import Selector
 import json
 import ast
+from scrapy.utils.project import get_project_settings
 from ...items.ke.esf import KeEsfItem
 
 class KeEsfSpider(scrapy.Spider):
@@ -11,12 +12,22 @@ class KeEsfSpider(scrapy.Spider):
     db_name = 'ke'
     collection_name = 'esf'
 
+    def __init__(self, name=None, page_num=0, city_name="", **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.page_num = int(page_num)
+        self.city_name = city_name
+
     def start_requests(self):
+        settings = get_project_settings()
+        ke_list_path = settings.get('KE_LIST_FILE')
+        with open(ke_list_path) as f:
+            ke_list = json.load(f)
 
-        api_url = 'https://bj.ke.com/ershoufang/esfrecommend?id='  
-        base_url = 'https://bj.ke.com/ershoufang/pg'
 
-        for i in range(1, 101):
+        api_url = ke_list[self.city_name] + '/ershoufang/esfrecommend?id='  
+        base_url = ke_list[self.city_name] + '/ershoufang/pg'
+
+        for i in range(1, self.page_num):
             yield scrapy.Request(
                 url=base_url+str(i),
                 meta={"api_url": api_url},

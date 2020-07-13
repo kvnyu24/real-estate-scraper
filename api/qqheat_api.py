@@ -16,7 +16,7 @@ class QQHeatAPI(BaseAPI):
 
     def crawl(self):
         scheduler = BlockingScheduler()
-        scheduler.add_job(mp_crawl, 'interval', hours=1)
+        scheduler.add_job(self.mp_crawl, 'interval', hours=1)
         print("Job added.")
         scheduler.start()
         print("Spider initiated")
@@ -34,7 +34,7 @@ class QQHeatAPI(BaseAPI):
         print("Crawling at {}".format(startstamp))
         spiders_list = ["XingYun0", "XingYun1", "XingYun2", "XingYun3"]
         p = mp.Pool()
-        p.map_async(crawl, spiders_list)
+        p.map_async(self.crawl_qq, spiders_list)
         p.close()
         p.join()
         

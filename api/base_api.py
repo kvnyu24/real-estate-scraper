@@ -1,9 +1,9 @@
 class BaseAPI:
     """Base class for all apis."""
 
-    def __init__(self, auth, bucket):
-        self.auth = auth
-        self.bucket = bucket
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items(): 
+            setattr(self, key, value)
 
 
     def crawl(self):

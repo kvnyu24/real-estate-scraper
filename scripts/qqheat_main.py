@@ -15,7 +15,6 @@ def crawl(spider_name):
 
     bucket.put_object_from_file('qq_{}_at_{}.json'.format(spider_name, timestamp), 'qq_{}_at_{}.json'.format(spider_name, timestamp))
     os.system("rm qq_{}_at_{}.json".format(spider_name, timestamp))
-    os.system("mongo qqheat --eval 'db.dropDatabase()'")
 
 def mp_crawl():
     startstamp =  datetime.datetime.now().strftime("%Y-%m-%d-%I-%M-%p")
@@ -28,6 +27,8 @@ def mp_crawl():
     
     finishstamp = datetime.datetime.now().strftime("%Y-%m-%d-%I-%M-%p")
     print("Job finished at {}".format(finishstamp))
+    os.system("mongo qqheat --eval 'db.dropDatabase()'")
+
 
 
 if __name__ == "__main__":

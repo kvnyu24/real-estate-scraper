@@ -115,3 +115,4 @@ FEED_EXPORT_ENCODING = 'utf-8'
 
 BAIDU_CITY_CODE_DICT_FILE = 'configs/baiduqianxi/cities_code.json'
 BAIDU_PROVINCE_CODE_DICT_FILE = 'configs/baiduqianxi/provinces_code.json'
+KE_LIST_FILE = 'configs/ke-list/ke-list.json'
