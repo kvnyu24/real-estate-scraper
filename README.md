@@ -25,22 +25,41 @@
                 - customizable crawling & upload files to oss & save to mongodb
             - method: get
                 - download json files from oss to target dirrectories for usage
-        - QQHeat API
+        - QQXingyuntu API
             - ```python
                 from api.qqheat_api import QQHeatAPI
-                qqheat = QQHeatAPI()
+                # outside of this folder:
+                # from deecamp_scraper.api.qqheat_api import QQHeatAPI  
+
+                qqheat = QQHeatAPI(30) #time_between=30s
                 # begin crawling
                 qqheat.crawl()
                 # get (timestamp_a, timestamp_b, save_dir)
                 qqheat.get("2020_07_11", "2020_07_12", "tmp")
 
               ```
-        - Ke API
+        - Beikezufang API
             - ```python
-                from api.ke_api import KeAPI  
-                ke_try = KeAPI(5, "北京", 30)
+                from api.ke_api import KeAPI 
+                # outside of this folder:
+                # from deecamp_scraper.api.ke_api import KeAPI  
+ 
+                ke_try = KeAPI(5, "北京", 30) #page_num=5, location="北京", time_between=30s
                 # begin crawling
                 ke_try.crawl() 
                 # get (timestamp_a, timestamp_b, save_dir)
-                ke_try.get("2020_07_11", "2020_07_12", "tmp")
+                ke_try.get("2020_07_11", "2020_07_12", "Esf", "tmp")
+              ```
+        
+        - Baiduqianxi API
+            - ```python
+                from api.baiduqx_api import BaiduQXAPI 
+                # outside of this folder:
+                # from deecamp_scraper.api.baiduqx_api import BaiduQXAPI  
+ 
+                baiduqx = BaiduQXAPI(30) #time_between=30s
+                # begin crawling
+                baiduqx.crawl() 
+                # get (timestamp_a, timestamp_b, save_dir)
+                baiduqx.get("2020_07_11", "2020_07_12", "Io", "tmp")
               ```

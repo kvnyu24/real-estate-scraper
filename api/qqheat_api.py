@@ -8,15 +8,20 @@ import json
 from .base_api import BaseAPI
 
 class QQHeatAPI(BaseAPI):
-    """QQHeat apis."""
+    """QQHeat api."""
 
-    def __init__(self, bucket=oss2.Bucket(oss2.Auth('LTAI4G8PBUWLB5t35TUdLjei', 'GXjsOJK6ML9wHWjGTca0DtxNyvzP2M'), 'http://oss-cn-shanghai.aliyuncs.com', 'qqxingyuntu')):
-        self.bucket = bucket
+    def __init__(self, time_between):
+        """
+        the spiders are initiated every @param:time_between seconds
+        @param(int:seconds):time_between
+        """
+        self.bucket = oss2.Bucket(oss2.Auth('LTAI4G8PBUWLB5t35TUdLjei', 'GXjsOJK6ML9wHWjGTca0DtxNyvzP2M'), 'http://oss-cn-shanghai.aliyuncs.com', 'qqxingyuntu')
+        self.time_between = time_between
 
 
     def crawl(self):
         scheduler = BlockingScheduler()
-        scheduler.add_job(self.mp_crawl, 'interval', hours=1)
+        scheduler.add_job(self.mp_crawl, 'interval', seconds=self.time_between)
         print("Job added.")
         scheduler.start()
         print("Spider initiated")

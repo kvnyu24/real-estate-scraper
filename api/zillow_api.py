@@ -1,4 +1,4 @@
-class BaseAPI:
+class ZillowAPI:
     """Base class for all apis."""
 
     def __init__(self, params):
