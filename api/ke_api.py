@@ -48,7 +48,7 @@ class KeAPI(BaseAPI):
         print("Job finished at {}".format(finishstamp))
 
 
-    def get(self, timestamp_a, timestamp_b, city, target_path):
+    def get(self, timestamp_a, timestamp_b, target_path):
         """
         get beikezufang data between @param:timestamp_a and @param:timestamp_b at @param:city
         @param(str:yyyy_mm_dd):timestamp_a
@@ -68,7 +68,7 @@ class KeAPI(BaseAPI):
             city_name = obj_file.split("_")[4]
             timestamp_created = datetime.date(int(creation_times[0]), int(creation_times[1]), int(creation_times[2]))
             if timestamp_created >= timestamp_a and timestamp_created <= timestamp_b:
-                if city_name == city:
+                if city_name == self.location:
                     res_files.append(obj_file)
 
         for obj_file in res_files:
