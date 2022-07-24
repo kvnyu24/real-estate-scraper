@@ -15,7 +15,7 @@ class QQHeatAPI(BaseAPI):
         the spiders are initiated every @param:time_between seconds
         @param(int:seconds):time_between
         """
-        self.bucket = oss2.Bucket(oss2.Auth('LTAI4G8PBUWLB5t35TUdLjei', 'GXjsOJK6ML9wHWjGTca0DtxNyvzP2M'), 'http://oss-cn-shanghai.aliyuncs.com', 'qqxingyuntu')
+        self.bucket = oss2.Bucket(oss2.Auth(YOUR_ACCESS_KEY_ID, YOUR_ACCESS_KEY_SECRET), YOUR_BUCKET_LOCATION, 'qqxingyuntu')
         self.time_between = time_between
 
 
