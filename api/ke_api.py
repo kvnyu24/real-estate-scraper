@@ -21,7 +21,7 @@ class KeAPI(BaseAPI):
         @param(int):page_num
         @param(str):location
         """
-        self.bucket = oss2.Bucket(oss2.Auth('LTAI4G8PBUWLB5t35TUdLjei', 'GXjsOJK6ML9wHWjGTca0DtxNyvzP2M'), 'http://oss-cn-shanghai.aliyuncs.com', 'beikezufang')
+        self.bucket = oss2.Bucket(oss2.Auth(YOUR_ACCESS_KEY_ID, YOUR_ACCESS_KEY_SECRET), YOUR_BUCKET_LOCATION, 'beikezufang')
         self.page_num = page_num
         self.location = location
         self.time_between = time_between
