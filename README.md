@@ -4,6 +4,7 @@
 #### Installation
 - run `pip install -r requirements.txt` 
 - install and setup mongodb at port 27017
+- Fill in your own parameter specs for Aliyun APIs.
 
 #### Usage
 - Scrape down data from webpages
